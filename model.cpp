@@ -65,7 +65,8 @@ Game::Game(pair<int, int> size) : s_(size), size_(size) {
 bool Game::Check_intersect() const {
 	Point head = s_.Get_segments().back();
 	if (head.x == 1 || head.x == size_.first || head.y == 1 || head.y == size_.second
-		|| count(s_.Get_segments().begin(), s_.Get_segments().end(), head) > 1)
+		|| count(s_.Get_segments().begin(), s_.Get_segments().end(), head) > 1
+		|| count(comp_.Get_segments().begin(), comp_.Get_segments().end(), head) > 0)
 		return true;
 	return false;
 }
