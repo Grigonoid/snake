@@ -1,7 +1,8 @@
 #include "model.h"
 
-void Handle_key(Game& g, char key)
-{
+using namespace std;
+
+void Handle_key(Game& g, char key) {
 	Direction current_dir = g.s_.dir_;
 	switch(key) {
 	case 'w':
@@ -19,4 +20,29 @@ void Handle_key(Game& g, char key)
 	default:
 		return;
 	}
+}
+
+int Square_distance(const Point& a, const Point& b) {
+	return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+}
+
+Point Find_nearest_rabbit(const Point& a, const set<Rabbit>& rabbits) {
+	Point res;
+	int min_dist = 1000000000;
+	for (const Rabbit& r : rabbits) {
+		int sq_dist = Square_distance(a, r.p_);
+		if (sq_dist < min_dist) {
+			min_dist = sq_dist;
+			res = r.p_;
+		}
+	}
+	return res;
+}
+
+void Comp_control(Game& g) {
+	Point head = g.comp_.Get_segments().back();
+	Point aim = Find_nearest_rabbit(head, g.rabbits);
+	if (aim.y != head.y)
+		g.comp_.dir_ = (aim.y > head.y) ? Direction::RIGHT : Direction::LEFT;
+	else g.comp_.dir_ = (aim.x > head.x) ? Direction::DOWN : Direction::UP;
 }

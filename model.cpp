@@ -70,9 +70,9 @@ bool Game::Check_intersect() const {
 	return false;
 }
 
-bool Game::Check_rabbit_and_delete() {
+bool Game::Check_rabbit_and_delete(const Snake& s) {
 	for (const Rabbit& r : rabbits)
-		if (s_.Get_segments().back() == r.p_) {
+		if (s.Get_segments().back() == r.p_) {
 			rabbits.erase(r);
 			return true;
 		}
@@ -91,13 +91,20 @@ void Game::Add_rabbit() {
 }
 
 bool Game::Change() {
-	if (Check_rabbit_and_delete()) {
+	if (Check_rabbit_and_delete(s_)) {
 		s_.Grow();
 		s_.Move();
 		Add_rabbit();
 	}
 	else 
 		s_.Move();
+	if (Check_rabbit_and_delete(comp_)) {
+		comp_.Grow();
+		comp_.Move();
+		Add_rabbit();
+	}
+	else 
+		comp_.Move();
 	if (Check_intersect())
 		return true;
 	return false;

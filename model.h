@@ -33,6 +33,10 @@ const int n_rabbits = 5;
 
 class Snake {
 public:
+	Snake() {
+		segments.push_back({16, 31}); //temporal solution
+		segments.push_back({15, 31});
+	}
 	Snake(pair<int, int> size);
 	const list<Point>& Get_segments() const {return segments;}
 	void Move();
@@ -46,12 +50,12 @@ private:
 class Game {
 public:
 	Game(pair<int, int> size);
-	bool Check_rabbit_and_delete();
+	bool Check_rabbit_and_delete(const Snake&);
 	void Add_rabbit();
 	bool Check_intersect() const;
 	bool Change();
 
 	set<Rabbit> rabbits;
-	Snake s_;
+	Snake s_, comp_;
 	pair<int, int> size_;
 };
