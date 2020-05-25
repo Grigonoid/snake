@@ -2,6 +2,7 @@
 
 #include <sys/ioctl.h>
 #include <string>
+#include <utility>
 #include <termios.h>
 #include <poll.h>
 #include <unistd.h>
@@ -18,7 +19,7 @@ private:
 public:
 	Tui();
 	~Tui() {tcsetattr(1, TCSANOW, &settings);}
-	Point Getsize() const override {return {ws.ws_row, ws.ws_col};}
+	pair<int, int> Getsize() const override {return {ws.ws_row, ws.ws_col};}
 	void To_xy(const Point& p) const {
 		printf("\e[%d;%dH", p.x, p.y);
 		fflush(stdout);

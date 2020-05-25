@@ -4,15 +4,22 @@ bool operator==(const Point& lhs, const Point& rhs) {
 	return (lhs.x == rhs.x && lhs.y == rhs.y);
 }
 
-Point Random_point (Point size) {
-	int x = (rand() % (size.x - 2)) + 2;
-	int y = (rand() % (size.y - 2)) + 2;
+bool operator<(const Rabbit& lhs, const Rabbit& rhs) {
+	if (lhs.p_.x != rhs.p_.x)
+		return lhs.p_.x < rhs.p_.x;
+	else
+		return lhs.p_.y < rhs.p_.y;
+}
+
+Point Random_point (pair<int, int> size) {
+	int x = (rand() % (size.first - 2)) + 2;
+	int y = (rand() % (size.second - 2)) + 2;
 	return {x, y};
 }
 
-Snake::Snake(Point size) {
-	segments.push_back({size.x / 2, size.y / 2});
-	segments.push_back({size.x / 2 - 1, size.y / 2});
+Snake::Snake(pair<int, int> size) {
+	segments.push_back({size.first / 2, size.second / 2});
+	segments.push_back({size.first / 2 - 1, size.second / 2});
 	dir_ = Direction::UP;
 }
 
@@ -49,28 +56,49 @@ void Snake::Grow() {
 			segments.push_front({last.x + 1, last.y});
 }
 
+Game::Game(pair<int, int> size) : s_(size), size_(size) {
+		srand(static_cast<unsigned int>(time(0)));
+		while (rabbits.size() < n_rabbits)
+			rabbits.insert(Rabbit(size)); //can spawn rabbit on snake
+	}
+
 bool Game::Check_intersect() const {
 	Point head = s_.Get_segments().back();
-	if (head.x == 1 || head.x == size_.x || head.y == 1 || head.y == size_.y
+	if (head.x == 1 || head.x == size_.first || head.y == 1 || head.y == size_.second
 		|| count(s_.Get_segments().begin(), s_.Get_segments().end(), head) > 1)
 		return true;
 	return false;
 }
 
-bool Game::Change() {
-	if (Check_rabbit()) {
-		s_.Grow();
-		Add_rabbit();
-	}
-	s_.Move();
-	if (Check_intersect())
-		return true;
+bool Game::Check_rabbit_and_delete() {
+	for (const Rabbit& r : rabbits)
+		if (s_.Get_segments().back() == r.p_) {
+			rabbits.erase(r);
+			return true;
+		}
 	return false;
 }
 
 void Game::Add_rabbit() {
 	Point p = Random_point(size_);
-	while (count(s_.Get_segments().begin(), s_.Get_segments().end(), p) > 0)
+	Rabbit r(p);
+	while (count(s_.Get_segments().begin(), s_.Get_segments().end(), p) > 0
+		   || rabbits.count(r) > 0) {
 		p = Random_point(size_);
-	r_.p_ = p;
+		r.p_ = p;
+	}
+	rabbits.insert(r);
+}
+
+bool Game::Change() {
+	if (Check_rabbit_and_delete()) {
+		s_.Grow();
+		s_.Move();
+		Add_rabbit();
+	}
+	else 
+		s_.Move();
+	if (Check_intersect())
+		return true;
+	return false;
 }

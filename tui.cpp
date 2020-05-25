@@ -40,6 +40,7 @@ void Tui::Draw(const Snake& s) const {
 void Tui::Draw(const Game& g) const {
 	Draw_boarder();
 	Draw(g.s_);
-	Draw(g.r_);
+	for (const Rabbit& r : g.rabbits)
+		Draw(r);
 	To_xy({1,1});
 }

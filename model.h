@@ -1,7 +1,10 @@
 #pragma once
 
+#include <iostream>
 #include <list>
+#include <set>
 #include <algorithm>
+#include <utility> //for pair
 #include <cstdlib> //for rand
 #include <ctime>    //and srand
 
@@ -16,16 +19,21 @@ struct Point {
 };
 
 bool operator==(const Point& lhs, const Point& rhs);
-Point Random_point (Point size);
+Point Random_point (pair<int, int> size);
 
 struct Rabbit {
-	Rabbit(Point size) {p_ = Random_point(size);}
+	Rabbit(Point p) : p_(p) {}
+	Rabbit(pair<int, int> size) {p_ = Random_point(size);}
 	Point p_;
 };
 
+bool operator<(const Rabbit& lhs, const Rabbit& rhs); //for set
+
+const int n_rabbits = 5;
+
 class Snake {
 public:
-	Snake(Point size);
+	Snake(pair<int, int> size);
 	const list<Point>& Get_segments() const {return segments;}
 	void Move();
 	void Grow();
@@ -37,14 +45,13 @@ private:
 
 class Game {
 public:
-	Game(Point size) : s_(size), r_(size), size_(size) {
-		srand(static_cast<unsigned int>(time(0)));
-	}
-	bool Check_rabbit() const {return (s_.Get_segments().back() == r_.p_);}
+	Game(pair<int, int> size);
+	bool Check_rabbit_and_delete();
 	void Add_rabbit();
 	bool Check_intersect() const;
 	bool Change();
+
+	set<Rabbit> rabbits;
 	Snake s_;
-	Rabbit r_;
-	Point size_;
+	pair<int, int> size_;
 };
