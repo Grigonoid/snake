@@ -4,19 +4,21 @@
 #include <string>
 #include <termios.h>
 #include <poll.h>
+#include <unistd.h>
 
 #include "model.h"
+#include "ui.h"
 
 using namespace std;
 
-class Tui {
+class Tui : public Ui {
 private:
 	struct termios settings;
 	struct winsize ws;
 public:
 	Tui();
 	~Tui() {tcsetattr(1, TCSANOW, &settings);}
-	Point Getsize() const {return {ws.ws_row, ws.ws_col};}
+	Point Getsize() const override {return {ws.ws_row, ws.ws_col};}
 	void To_xy(const Point& p) const {
 		printf("\e[%d;%dH", p.x, p.y);
 		fflush(stdout);
@@ -26,10 +28,10 @@ public:
 		printf("\e[%d;%dH%c", p.x, p.y, c);
 		fflush(stdout);
 	}
-	void Draw_boarder() const;
-	void Draw(const Rabbit& r) const {Put_c(r.p_, '$');}
-	void Draw(const Snake& s) const;
-	char Get_key();
-	void Draw(const Game& g) const;
+	void Draw_boarder() const override;
+	void Draw(const Rabbit& r) const override {Put_c(r.p_, '$');}
+	void Draw(const Snake& s) const override;
+	char Get_key() override;
+	void Draw(const Game& g) const override;
 };
 
